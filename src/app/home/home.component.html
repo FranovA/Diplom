@@ -14,27 +14,58 @@
                 <div class="filter" [ngClass]="{'selected': selectedCategory == 1}" (click)="selectedCategory = 1;">Отчёты</div>
                 <div class="filter" [ngClass]="{'selected': selectedCategory == 2}" (click)="selectedCategory = 2;">Запросы</div>
             </div>
-            <div class="articles" *ngIf="selectedCategory == 0">
-                <ng-container *ngFor="let article of articles;">
-                    <div class="article" *ngIf="article['category'] == selectedCategory || selectedCategory == 0" (click)="selectedTable = article['id']">
-                        <div class="title" [ngClass]="{'selected-table': selectedTable == article['id']}">{{ article['title'] }}</div>
-                        <!--<img src="assets/fon {{ article['id'] }}.jpg">-->
-                    </div>
-                </ng-container>
-            </div>
-            <div class="button-holder">
-                <div class="button" [ngClass]="{'button-active': isAdding == true}" (click)="isAdding = true">Добавить</div>
-                <div class="button" [ngClass]="{'button-active': isAdding == false}" (click)="isAdding = false">Удалить</div>
-            </div>
-            <div class="data-inputs">
-                <ng-container *ngFor="let field of tables[selectedTable]['fields'];">
+            <ng-container *ngIf="selectedCategory == 0">
+                <div class="articles">
+                    <ng-container *ngFor="let article of articles;">
+                        <div class="article" *ngIf="article['category'] == selectedCategory || selectedCategory == 0" (click)="selectedTable = article['id']">
+                            <div class="title" [ngClass]="{'selected-table': selectedTable == article['id']}">{{ article['title'] }}</div>
+                            <!--<img src="assets/fon {{ article['id'] }}.jpg">-->
+                        </div>
+                    </ng-container>
+                </div>
+                <div class="button-holder">
+                    <div class="button" [ngClass]="{'button-active': isAdding == true}" (click)="isAdding = true; addRow()">Добавить</div>
+                    <div class="button" [ngClass]="{'button-active': isAdding == false}" (click)="isAdding = false">Удалить</div>
+                </div>
+                <div class="data-inputs">
+                    <ng-container *ngFor="let field of tables[selectedTable]['fields'];">
+                        <div class="input-holder">
+                            <div>{{ field['verbose'] }}</div>
+                            <input (change)="editData(tables[selectedTable]['db_name'], field['title'], $any($event).target.value)">
+                        </div>
+                    </ng-container>
+                </div>
+                <div class="button-holder">
+                    <div class="button" (click)="isAdding ? addRow() : deleteRow()">Сохранить</div>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="selectedCategory == 2">
+                <div class="articles">
+                    <ng-container *ngFor="let query of queries;">
+                        <div class="article" (click)="selectedQuery = query['id']">
+                            <div class="title" [ngClass]="{'selected-table': selectedQuery == query['id']}">{{ query['title'] }}</div>
+                        </div>
+                    </ng-container>
+                </div>
+                <div class="data-inputs">
                     <div class="input-holder">
-                        <div>{{ field }}</div>
-                        <input [ngModel]="people"> 
-                    
+                        <div>{{ queries[selectedQuery]['search'] }}</div>
+                        <input (change)="editQuery($any($event).target.value)">
                     </div>
-                </ng-container>
-            </div>
+                </div>
+                <div class="button-holder">
+                    <div class="button" (click)="searchQuery()">Поиск</div>
+                </div>
+
+                <div class="data-table-wrapper">
+                    <div class="data-table" *ngFor="let row of queryTable;">
+                        <div class="data-row" *ngFor="let item of row | keyvalue">
+                            <div>{{ item.key }}</div>
+                            <div>{{ item.value }}</div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
         </div>
     </div>
 </div>
