@@ -45,10 +45,19 @@ export class HomeComponent implements OnInit {
     // {'id': 2, 'title': 'Кто в бригаде', 'table': 'people', 'search': 'Введите код бригады'},
     {'id': 2, 'title': 'Какая бригада на объекте', 'table': 'project_info', 'search': 'Введите код объекта'}
   ]
+  reports: any = [
+    {'id': 0, 'title': 'По законченным объектам', 'url': 'projects_done', 'search': 'Введите дату окончания', 'key': 'date', 'data': null},
+    {'id': 1, 'title': 'По зарплате работников', 'url': 'people_salary', 'search': '', 'key': null, 'data': null},
+    {'id': 2, 'title': 'По стоимости объекта', 'url': 'project_cost', 'search': 'Введите код объекта', 'key': 'id', 'data': null},
+    {'id': 3, 'title': 'По проделанным работам', 'url': 'project_works', 'search': 'Введите код объекта', 'key': 'id', 'data': null},
+  ]
   queryData: any = '';
+  reportData: any = '';
   selectedQuery = 0;
+  selectedReport = 0;
 
   queryTable: any = [];
+  reportTable: any = [];
 
   constructor(private router: Router, private http: HttpClient) { }
 
@@ -95,5 +104,26 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  public editReport(data: any)
+  {
+    this.reportData = data;
+  }
 
+  public searchReport()
+  {
+    let selectedReport = this.reports[this.selectedReport];
+    let url = `http://127.0.0.1:8000/${selectedReport['url']}`;
+    if (selectedReport['key'] != null) url += `?${selectedReport['key']}=${this.reportData}`;
+    this.http.get(url).subscribe(result => {
+      this.reportTable = result;
+      console.log(result)
+    });
+  }
+
+  public test()
+  {
+    this.http.get('http://127.0.0.1:8000/projects_done?date=2023-06-02').subscribe(result => {
+      console.log(result);
+    });
+  }
 }

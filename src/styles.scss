@@ -15,6 +15,10 @@ body {
     .title {
         font-size: 1.5rem;
         cursor: pointer;
+
+        img {
+            height: 40px;
+        }
     }
     .wrapper {
         display: flex;
@@ -131,6 +135,9 @@ body {
     .data-table-wrapper {
         padding: 2rem 2rem;
         .data-table {
+            background-color: black;
+            padding: 1rem;
+            margin: 1rem;
             .data-row {
                 display: flex;
                 justify-content: space-between;
