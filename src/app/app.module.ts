@@ -5,12 +5,16 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { ArticleComponent } from './article/article.component';
+import { TitlePipe } from './pipes/title.pipe';
+import { ValuePipe } from './pipes/value.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    ArticleComponent
+    ArticleComponent,
+    TitlePipe,
+    ValuePipe
   ],
   imports: [
     BrowserModule,

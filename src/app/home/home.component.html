@@ -20,31 +20,59 @@
             <ng-container *ngIf="selectedCategory == 0">
                 <div class="articles">
                     <ng-container *ngFor="let article of articles;">
-                        <div class="article" *ngIf="article['category'] == selectedCategory || selectedCategory == 0" (click)="selectedTable = article['id']">
+                        <div class="article" (click)="selectedTable = article['id']; getTableData(article['url']);">
                             <div class="title" [ngClass]="{'selected-table': selectedTable == article['id']}">{{ article['title'] }}</div>
                             <!--<img src="assets/fon {{ article['id'] }}.jpg">-->
                         </div>
                     </ng-container>
                 </div>
-                <div class="button-holder">
-                    <div class="button" [ngClass]="{'button-active': isAdding == true}" (click)="isAdding = true">Добавить</div>
-                    <div class="button" [ngClass]="{'button-active': isAdding == false}" (click)="isAdding = false">Удалить</div>
+                <div class="table-scroll">
+                    <table>
+                        <tr *ngFor="let row of data.slice(0, 1)">
+                            <th></th>
+                            <th></th>
+                            <th *ngFor="let field of row | title">{{ field }}</th>
+                        </tr>
+                        <tr *ngFor="let row of data; let i = index">
+                            <td *ngIf="editRow != i"><button (click)="editRow = i;">Изменить</button></td>
+                            <td *ngIf="editRow == i"><button (click)="editRow = null;">Сохранить</button></td>
+                            <td><button (click)="deleteDataRow(i);">Удалить</button></td>
+                            <td *ngFor="let field of row | value">
+                                <ng-container *ngIf="editRow != i">{{ field.value }}</ng-container>
+                                <ng-container *ngIf="editRow == i"><input (change)="onFieldChange(i, field.key, $any($event).target.value);" value="{{ field.value }}"></ng-container>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
-                <div class="data-inputs">
-                    <ng-container *ngFor="let field of tables[selectedTable]['fields'];">
-                        <div class="input-holder" *ngIf="isAdding && field['title'] != 'id'">
-                            <div>{{ field['verbose'] }}</div>
-                            <input (change)="editData(tables[selectedTable]['db_name'], field['title'], $any($event).target.value)">
+                <!-- <div class="data-inputs">
+                    <div class="headers" *ngFor="let row of data.slice(0, 1)">
+                        <div *ngFor="let field of row | keyvalue">
+                            <div>{{ field.key }}</div>
                         </div>
-                        <div class="input-holder" *ngIf="!isAdding && field['title'] == 'id'">
-                            <div>{{ field['verbose'] }}</div>
-                            <input (change)="editData(tables[selectedTable]['db_name'], field['title'], $any($event).target.value)">
+                    </div>
+                    <div class="row" *ngFor="let row of data">
+                        <div *ngFor="let field of row | keyvalue">
+                            <div>{{ field.value }}</div>
                         </div>
-                    </ng-container>
-                </div>
+                    </div>
+                </div> -->
                 <div class="button-holder">
-                    <div class="button" (click)="isAdding ? addRow() : deleteRow()">Сохранить</div>
+                    <div class="button" [ngClass]="{'button-active': isAdding == true}" (click)="isAdding = !isAdding;">Добавление</div>
                 </div>
+                <ng-container *ngIf="isAdding == true;">
+                    <div class="data-inputs">
+                        <ng-container *ngFor="let field of tables[selectedTable]['fields'];">
+                            <div class="input-holder" *ngIf="field['title'] != 'id'">
+                                <div>{{ field['verbose'] }}</div>
+                                <input (change)="onNewDataChange(field['title'], $any($event).target.value)">
+                            </div>
+                        </ng-container>
+                    </div>
+                    <div class="comment" *ngIf="comment != ''">{{ comment }}</div>
+                    <div class="button-holder">
+                        <div class="button" (click)="addRow();">Сохранить</div>
+                    </div>
+                </ng-container>
             </ng-container>
 
             <ng-container *ngIf="selectedCategory == 1">
@@ -67,8 +95,8 @@
 
                 <div class="data-table-wrapper">
                     <div class="data-table" *ngFor="let row of reportTable;">
-                        <div class="data-row" *ngFor="let item of row | keyvalue">
-                            <div>{{ item.key }}</div>
+                        <div class="data-row" *ngFor="let item of row | value">
+                            <div>{{ row[item.key]['title'] }}</div>
                             <div>{{ item.value }}</div>
                         </div>
                     </div>
@@ -95,8 +123,8 @@
 
                 <div class="data-table-wrapper">
                     <div class="data-table" *ngFor="let row of queryTable;">
-                        <div class="data-row" *ngFor="let item of row | keyvalue">
-                            <div>{{ item.key }}</div>
+                        <div class="data-row" *ngFor="let item of row | value">
+                            <div>{{ row[item.key]['title'] }}</div>
                             <div>{{ item.value }}</div>
                         </div>
                     </div>
